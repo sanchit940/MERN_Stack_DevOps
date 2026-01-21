@@ -81,15 +81,11 @@ resource "aws_internet_gateway" "main_igw" {
   
 }
 #----------EIP and NAT-------------------------------
-resource "aws_eip" "nat" {
-  domain = "vpc"
 
-  
-}
 resource "aws_nat_gateway" "main_nat_gateway" {
   vpc_id = aws_vpc.main_vpc.id
-  allocation_id = aws_eip.nat.id
-  subnet_id = aws_subnet.public_subnet[0].id
   availability_mode = "regional"
   depends_on = [ aws_internet_gateway.main_igw ]
+  ## removed subnet ids and eip association
 }
+
