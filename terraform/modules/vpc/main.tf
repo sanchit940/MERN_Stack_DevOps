@@ -21,6 +21,8 @@ resource "aws_subnet" "public_subnet" {
   tags = {
     Name= "public-subnet-${count.index}"
     "kubernetes.io/role/elb" = "1"
+    "kubernetes.io/cluster/mern-stack-cluster" = "shared"
+
   }
   
 }
@@ -33,6 +35,8 @@ resource "aws_subnet" "private_subnet" {
   tags = {
     Name= "private-subnet-${count.index}"
     "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/mern-stack-cluster" = "shared"
+
   }
 
   
@@ -88,8 +92,9 @@ resource "aws_nat_gateway_eip_association" "nat_eip" {
 }
 
 resource "aws_nat_gateway" "main_nat_gateway" {
+  vpc_id = aws_vpc.main_vpc.id
   allocation_id = aws_eip.nat.id
   subnet_id = aws_subnet.public_subnet[0].id
   availability_mode = "regional"
+  depends_on = [ aws_internet_gateway.main_igw ]
 }
-
