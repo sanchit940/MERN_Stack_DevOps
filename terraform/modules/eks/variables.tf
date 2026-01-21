@@ -27,10 +27,10 @@ variable "scaling_config" {
 variable "eks_addons" {
   type = map(string)
   default = {
-    coredns             = "v1.12.2-eksbuild.4"
-    kube-proxy          = "v1.33.0-eksbuild.2"
-    vpc-cni             = "v1.20.0-eksbuild.1"
-    aws-ebs-csi-driver  = "v1.46.0-eksbuild.1"
+    coredns             = "v1.13.1-eksbuild.1"
+    kube-proxy          = "v1.34.1-eksbuild.2"
+    vpc-cni             = "v1.21.1-eksbuild.1"
+    aws-ebs-csi-driver  = "v1.54.0-eksbuild.1"
   }
 }
 
