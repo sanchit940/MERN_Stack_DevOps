@@ -60,9 +60,6 @@ resource "aws_iam_openid_connect_provider" "eks" {
   thumbprint_list = [data.tls_certificate.eks.certificates[0].sha1_fingerprint]
 }
 
-
-
-
 resource "aws_eks_cluster" "cluster_node" {
     name = "mern-stack-cluster"
     role_arn = aws_iam_role.cluster_node_role.arn
@@ -106,3 +103,4 @@ resource "aws_eks_addon" "addons" {
     addon_version = each.value
     depends_on = [ aws_eks_node_group.worker_node ]
 }
+
