@@ -86,11 +86,6 @@ resource "aws_eip" "nat" {
 
   
 }
-resource "aws_nat_gateway_eip_association" "nat_eip" {
-  allocation_id = aws_eip.nat.id
-  nat_gateway_id = aws_nat_gateway.main_nat_gateway.id  
-}
-
 resource "aws_nat_gateway" "main_nat_gateway" {
   vpc_id = aws_vpc.main_vpc.id
   allocation_id = aws_eip.nat.id
