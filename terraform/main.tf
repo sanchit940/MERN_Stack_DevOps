@@ -12,9 +12,9 @@ module "eks" {
   ec2_instance_type  = "t3.medium"
   kubernetes_version = "1.34"
   eks_addons = {
-    coredns            = "v1.11.1-eksbuild.4"
-    kube-proxy         = "v1.29.0-eksbuild.1"
-    vpc-cni            = "v1.16.0-eksbuild.1"
-    aws-ebs-csi-driver = "v1.30.0-eksbuild.1"
+    coredns            = "v1.13.1-eksbuild.1"
+    kube-proxy         = "v1.34.1-eksbuild.2"
+    vpc-cni            = "v1.21.1-eksbuild.1"
+    aws-ebs-csi-driver = "v1.54.0-eksbuild.1"
   }
 }# trigger run
