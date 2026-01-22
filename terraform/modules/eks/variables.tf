@@ -40,3 +40,6 @@ variable "ec2_instance_type" {
     default = "t3.medium"
   
 }
+variable "vpc_id" {
+  
+}

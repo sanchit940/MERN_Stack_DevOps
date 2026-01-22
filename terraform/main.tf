@@ -11,10 +11,19 @@ module "eks" {
   private_subnet_ids = module.vpc.private_subnet_ids
   ec2_instance_type  = "t3.medium"
   kubernetes_version = "1.34"
+  vpc_id = module.vpc.main_vpc_id
   eks_addons = {
     coredns            = "v1.13.1-eksbuild.1"
     kube-proxy         = "v1.34.1-eksbuild.2"
     vpc-cni            = "v1.21.1-eksbuild.1"
     aws-ebs-csi-driver = "v1.54.0-eksbuild.1"
   }
-}# trigger run
+}
+
+module "bastion" {
+  source = "./modules/bastion"
+  eks_cluster_sg = module.eks.eks_cluster_sg
+  vpc_id = module.vpc.main_vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+}
+

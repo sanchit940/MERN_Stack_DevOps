@@ -68,6 +68,7 @@ resource "aws_eks_cluster" "cluster_node" {
       endpoint_private_access = true
       subnet_ids = var.private_subnet_ids
       endpoint_public_access = false
+      security_group_ids      = [aws_security_group.eks_cluster_sg.id]
     }
   
 }
@@ -102,4 +103,21 @@ resource "aws_eks_addon" "addons" {
     addon_version = each.value
     resolve_conflicts_on_update = "OVERWRITE"
     depends_on = [ aws_eks_node_group.worker_node ]
+}
+
+resource "aws_security_group" "eks_cluster_sg" {
+  name        = "eks-cluster-sg"
+  description = "EKS control plane security group"
+  vpc_id      = var.vpc_id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "eks-cluster-sg"
+  }
 }
