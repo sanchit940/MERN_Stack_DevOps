@@ -100,5 +100,6 @@ resource "aws_eks_addon" "addons" {
     cluster_name = aws_eks_cluster.cluster_node.name
     addon_name = each.key
     addon_version = each.value
+    resolve_conflicts_on_update = "OVERWRITE"
     depends_on = [ aws_eks_node_group.worker_node ]
 }
