@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: mern-stack
+  name: mongodb-headless
+  labels:
+    app: mongodb
+spec:
+  clusterIP: None  # Makes it headless
+  selector:
+    app: mongodb
+  ports:
+  - port: 27017
+    targetPort: 27017
+    name: mongodb

@@ -1,0 +1,93 @@
+name: "backend-pipeline"
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types: [opened, synchronize, reopened]
+permissions:
+    id-token: write
+    contents: write
+jobs:
+    sonarqube:
+        name: SonarQube
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+            with:
+                fetch-depth: 0 
+          - name: SonarQube Scan
+            uses: SonarSource/sonarqube-scan-action@v6
+            env:
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    docker: 
+         runs-on: ubuntu-latest
+         steps:
+            - name: login to DockerHub
+              uses: docker/login-action@v2
+              with:
+                  username: ${{ secrets.DOCKERHUB_USERNAME }}
+                  password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+            -  name: Set up QEMU
+               uses: docker/setup-qemu-action@v3
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+            - name: Build
+              uses: docker/build-push-action@v6
+              with:
+                    context: Application-Code/backend
+                    push: false
+                    tags: |
+                        ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
+                        ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+                    outputs: type= docker, dest=${{runner.temp}}/backend-image.tar
+
+            - name: upload image as artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Docker-Image
+                  path: ${{runner.temp}}/backend-image.tar
+                  retention-days: 1
+    push: 
+        runs-on: ubuntu-latest
+        needs: docker
+        steps:
+            - name: download artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: Docker-Image
+                path: ${{ runner.temp }}
+                
+            - name: Trivy Scan
+              uses:  aquasecurity/trivy-action@0.33.1
+              with:
+                    input: ${{ runner.temp }}/backend-image.tar
+                    format: 'table'
+                    exit-code: '1'
+                    severity: 'CRITICAL,HIGH'
+                    ignore-unfixed: true
+            - name: Load Docker Image
+              run: |
+                  docker load -i ${{ runner.temp }}/backend-image.tar
+            - name: Push to DockerHub
+              uses: docker/build-push-action@v6
+              with:
+                    push: true
+                    tags: |
+                        ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
+                        ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+    update-k8s:
+        runs-on: ubuntu-latest
+        needs: push
+        steps:
+            - name: update the backend k8 image tag
+              run: |
+                    sed -i 's|image: .*|image: '"${{ secrets.DOCKERHUB_USERNAME }}"'/backend:'"${{ github.sha }}"'|g' kubernetes/backend/deployment.yml
+            - name: commit changes
+              run: |
+                    git config --global user.name "github-actions"
+                    git config --global user.email "github-actions@github.com"
+                    git add kubernetes/backend/deployment.yml
+                    git commit -m "Update backend image to ${{ github.sha }}"
+                    git push

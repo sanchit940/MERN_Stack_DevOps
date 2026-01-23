@@ -1,0 +1,55 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: Ingress-deployment
+  namespace: mern-stack
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+  
+spec:
+  ingressClassName: alb
+  rules:
+  - host: buildwithsanchit.me
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3500
+
+      - path: /healthz
+        pathType: Exact
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3500
+
+      - path: /ready
+        pathType: Exact
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3500
+
+      - path: /started
+        pathType: Exact
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 3500
+
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name:  frontend-service
+            port: 
+              number: 3000
