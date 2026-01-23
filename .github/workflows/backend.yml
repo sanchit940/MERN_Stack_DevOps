@@ -37,7 +37,7 @@ jobs:
             - name: Build
               uses: docker/build-push-action@v6
               with:
-                    context: ./Application-Code/backend/
+                    context: Application-Code/backend
                     push: false
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
