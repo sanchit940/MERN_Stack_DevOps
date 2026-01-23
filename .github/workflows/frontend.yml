@@ -44,7 +44,7 @@ jobs:
                     tags: |
                         ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}
                         ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
-                    outputs: type= docker,dest=${{runner.temp}}/frontend-image.tar
+                    outputs: type=docker,dest=${{runner.temp}}/frontend-image.tar
     
             - name: upload image as artifact
               uses: actions/upload-artifact@v6
