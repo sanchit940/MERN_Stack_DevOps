@@ -44,7 +44,7 @@ jobs:
                     outputs: type= docker, dest=${{runner.temp}}/backend-image.tar
 
             - name: upload image as artifact
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v6
               with:
                   name: Docker-Image
                   path: ${{runner.temp}}/backend-image.tar
@@ -54,7 +54,7 @@ jobs:
         needs: docker
         steps:
             - name: download artifact
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v6
               with:
                 name: Docker-Image
                 path: ${{ runner.temp }}
