@@ -82,6 +82,8 @@ jobs:
         runs-on: ubuntu-latest
         needs: push
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
             - name: update the backend k8 image tag
               run: |
                     sed -i 's|image: .*|image: '"${{ secrets.DOCKERHUB_USERNAME }}"'/backend:'"${{ github.sha }}"'|g' kubernetes/backend/deployment.yml

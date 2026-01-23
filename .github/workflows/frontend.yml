@@ -7,13 +7,13 @@ on:
         types: [opened, synchronize, reopened]
 permissions:
     id-token: write
-    contents: read
+    contents: write
 jobs:
     sonarqube:
         name: SonarQube
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v4
+          - uses: actions/checkout@v6
             with:
                 fetch-depth: 0  
           - name: SonarQube Scan
@@ -25,6 +25,8 @@ jobs:
          runs-on: ubuntu-latest
          needs: sonarqube
          steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
             - name: login to DockerHub
               uses: docker/login-action@v2
               with:
@@ -83,6 +85,8 @@ jobs:
         runs-on: ubuntu-latest
         needs: push
         steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
             - name: update the frontend k8 image tag
               run: |
                     sed -i 's|image: .*|image: '"${{ secrets.DOCKERHUB_USERNAME }}"'/frontend:'"${{ github.sha }}"'|g' kubernetes/frontend/deployment.yml
