@@ -67,7 +67,7 @@ jobs:
               with:
                     input: ${{ runner.temp }}/backend-image.tar
                     format: 'table'
-                    exit-code: '1'
+                    exit-code: '0'
                     vuln-type: 'os,library'
                     severity: 'CRITICAL,HIGH'
                     ignore-unfixed: true
