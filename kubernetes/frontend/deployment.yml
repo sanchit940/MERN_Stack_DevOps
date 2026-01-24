@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: sanchit021/frontend:d3ec1e1249cf1eabfcf2794126abedc818362744
+          image: sanchit021/frontend:996d87e15c5c0f2aa4f968de32f51aa7e4ba8f46
           ports:
             - containerPort: 80
           resources:
