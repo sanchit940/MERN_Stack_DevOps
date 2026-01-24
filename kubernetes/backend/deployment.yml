@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: 'sanchit021/backend:latest'
+          image: sanchit021/backend:7054084dcae905a65781789f50d9a92ffe16cd18
           resources:
             limits:
               memory: 128Mi
