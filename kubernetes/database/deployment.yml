@@ -54,12 +54,7 @@ spec:
           exec:
             command:
               - mongo
-              - -u
-              - admin
-              - -p
-              - password123
-              - --authenticationDatabase
-              - admin
+              - --quiet
               - --eval
               - db.adminCommand('ping')
           initialDelaySeconds: 30
@@ -68,12 +63,7 @@ spec:
           exec:
             command:
               - mongo
-              - -u
-              - admin
-              - -p
-              - password123
-              - --authenticationDatabase
-              - admin
+              - --quiet
               - --eval
               - db.adminCommand('ping')
           initialDelaySeconds: 10
