@@ -8,6 +8,9 @@ on:
             - main
     pull_request:
         types: [opened, synchronize, reopened]
+concurrency:
+    group: k8-manifest-update
+    cancel-in-progress: true
 permissions:
     id-token: write
     contents: write
@@ -108,7 +111,10 @@ jobs:
               run: |
                     git config --global user.name "github-actions"
                     git config --global user.email "github-actions@github.com"
+
+                    git pull --rebase origin main
+
                     git add kubernetes/frontend/deployment.yml
-                    git commit -m "Update frontend image to ${{ github.sha }}"
+                    git commit -m "Update frontend image to ${{ github.sha }} [skip ci]"
                     git push
         
