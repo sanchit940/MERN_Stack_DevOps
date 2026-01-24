@@ -9,9 +9,6 @@ on:
       
     pull_request:
         types: [opened, synchronize, reopened]
-concurrency:
-    group: k8-manifest-update
-    cancel-in-progress: false
 permissions:
     id-token: write
     contents: write
@@ -100,19 +97,18 @@ jobs:
     update-k8s:
         runs-on: ubuntu-latest
         needs: push
+        concurrency:
+          group: k8-manifest-update
+          cancel-in-progress: false
         steps:
             - name: Checkout code
               uses: actions/checkout@v6
             - name: update the backend k8 image tag
               run: |
-                    sed -i 's|image: .*|image: '"${{ secrets.DOCKERHUB_USERNAME }}"'/backend:'"${{ github.sha }}"'|g' kubernetes/backend/deployment.yml
-            - name: commit changes
-              run: |
-                    git config --global user.name "github-actions"
-                    git config --global user.email "github-actions@github.com"
-
-                    git pull --rebase origin main
-
-                    git add kubernetes/backend/deployment.yml
-                    git commit -m "Update backend image to ${{ github.sha }} [skip ci]"
-                    git push
+                git config --global user.name "github-actions"
+                git config --global user.email "github-actions@github.com"
+                git pull --rebase origin main
+                sed -i 's|image: .*|image: '"${{ secrets.DOCKERHUB_USERNAME }}"'/backend:'"${{ github.sha }}"'|g' kubernetes/backend/deployment.yml
+                git add kubernetes/backend/deployment.yml
+                git commit -m "Update backend image to ${{ github.sha }} [skip ci]"
+                git push
