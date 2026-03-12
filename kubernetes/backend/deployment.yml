@@ -9,7 +9,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 25%
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: backend
@@ -17,10 +17,31 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "3500"
     spec:
       containers:
         - name: backend
           image: sanchit021/backend:d3ec1e1249cf1eabfcf2794126abedc818362744
+          env:
+            - name: PORT
+              value: "3500"
+            - name: USE_DB_AUTH
+              value: "true"
+            - name: MONGO_CONN_STR
+              value: mongodb://mongodb-headless:27017/tasks?replicaSet=rs0
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongodb-root-username
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: mongodb-root-password
           resources:
             limits:
               memory: 128Mi
@@ -30,3 +51,19 @@ spec:
               cpu: 500m
           ports:
             - containerPort: 3500
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3500
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3500
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3

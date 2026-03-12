@@ -4,6 +4,10 @@ const cors = require("cors");
 const express = require("express");
 const app = express();
 const mongoose = require('mongoose');
+const promClient = require('prom-client');
+
+const register = new promClient.Registry();
+promClient.collectDefaultMetrics({ register });
 
 connection();
 
@@ -38,6 +42,11 @@ app.get('/ready', (req, res) => {
 app.get('/started', (req, res) => {
     // Assuming the server has started correctly if this endpoint is reachable
     res.status(200).send('Started');
+});
+
+app.get('/metrics', async (req, res) => {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
 });
 
 app.use("/api/tasks", tasks);
